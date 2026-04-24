@@ -1,6 +1,352 @@
 import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
+// Карта-тултип для адресов
+function MapTooltip({ address, mapSrc, children }: { address: string; mapSrc: string; children: React.ReactNode }) {
+  const [show, setShow] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  return (
+    <div
+      ref={ref}
+      style={{ position: "relative", display: "inline-block" }}
+      onMouseEnter={() => setShow(true)}
+      onMouseLeave={() => setShow(false)}
+    >
+      {children}
+      {show && (
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            bottom: "calc(100% + 12px)",
+            zIndex: 200,
+            width: 280,
+            background: "rgba(10,22,38,0.98)",
+            border: "1px solid rgba(30,144,255,0.35)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 30px rgba(30,144,255,0.1)",
+            borderRadius: 4,
+            overflow: "hidden",
+            animation: "fade-in 0.2s ease-out",
+          }}
+        >
+          <div style={{ height: 160, overflow: "hidden", position: "relative" }}>
+            <iframe
+              src={mapSrc}
+              width="100%"
+              height="160"
+              style={{ border: "none", display: "block", filter: "brightness(0.85) saturate(1.2)" }}
+              loading="lazy"
+              title={address}
+            />
+          </div>
+          <div
+            style={{
+              padding: "10px 14px",
+              fontFamily: "IBM Plex Sans, sans-serif",
+              fontSize: "0.78rem",
+              color: "var(--text-muted)",
+              borderTop: "1px solid rgba(30,144,255,0.15)",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <Icon name="MapPin" size={12} style={{ color: "#1e90ff", flexShrink: 0 }} />
+            {address}
+          </div>
+          {/* стрелка вниз */}
+          <div style={{
+            position: "absolute",
+            bottom: -7,
+            left: 20,
+            width: 12,
+            height: 12,
+            background: "rgba(10,22,38,0.98)",
+            border: "1px solid rgba(30,144,255,0.35)",
+            borderTop: "none",
+            borderLeft: "none",
+            transform: "rotate(45deg)",
+          }} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Калькулятор стрейч плёнки
+function FilmCalculator() {
+  const [open, setOpen] = useState(false);
+  const [mode, setMode] = useState<"weight" | "length">("weight");
+  const [width, setWidth] = useState(500);
+  const [thickness, setThickness] = useState(20);
+  const [value, setValue] = useState<number | "">("");
+
+  const density = 0.920; // г/см³ для LLDPE
+  const widthM = width / 1000;
+  const thickM = thickness / 1000000;
+
+  let result: string | null = null;
+  if (value !== "" && Number(value) > 0) {
+    if (mode === "weight") {
+      const lengthM = (Number(value) * 1000) / (density * widthM * thickM * 1000000);
+      result = `≈ ${lengthM.toFixed(0)} м длины`;
+    } else {
+      const weightG = density * widthM * thickM * Number(value) * 1000000;
+      result = `≈ ${(weightG / 1000).toFixed(2)} кг`;
+    }
+  }
+
+  return (
+    <div style={{ marginTop: 40 }}>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          background: "rgba(30,144,255,0.06)",
+          border: "1px solid rgba(30,144,255,0.25)",
+          color: "#64b5f6",
+          fontFamily: "Oswald, sans-serif",
+          fontSize: "0.9rem",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          padding: "12px 20px",
+          cursor: "pointer",
+          transition: "all 0.3s",
+          borderRadius: 2,
+        }}
+        onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(30,144,255,0.12)"; e.currentTarget.style.borderColor = "#1e90ff"; }}
+        onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(30,144,255,0.06)"; e.currentTarget.style.borderColor = "rgba(30,144,255,0.25)"; }}
+      >
+        <Icon name="Calculator" size={16} style={{ color: "#1e90ff" }} />
+        Калькулятор плёнки
+        <Icon name={open ? "ChevronUp" : "ChevronDown"} size={14} style={{ color: "#1e90ff", marginLeft: "auto" }} />
+      </button>
+
+      {open && (
+        <div
+          style={{
+            marginTop: 0,
+            background: "rgba(13,28,46,0.9)",
+            border: "1px solid rgba(30,144,255,0.2)",
+            borderTop: "none",
+            padding: "28px 32px",
+            animation: "fade-in 0.3s ease-out",
+          }}
+        >
+          <div style={{ fontFamily: "Oswald, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#fff", marginBottom: 20, letterSpacing: "0.03em" }}>
+            РАСЧЁТ СТРЕЙЧ ПЛЁНКИ
+          </div>
+
+          {/* Режим */}
+          <div style={{ display: "flex", gap: 0, marginBottom: 24, border: "1px solid rgba(74,144,217,0.2)", width: "fit-content" }}>
+            {([["weight", "По весу → длина"], ["length", "По длине → вес"]] as const).map(([m, label]) => (
+              <button
+                key={m}
+                onClick={() => { setMode(m); setValue(""); }}
+                style={{
+                  padding: "9px 18px",
+                  fontFamily: "IBM Plex Sans, sans-serif",
+                  fontSize: "0.82rem",
+                  background: mode === m ? "#1e90ff" : "transparent",
+                  color: mode === m ? "#fff" : "var(--text-muted)",
+                  border: "none",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4" style={{ marginBottom: 20 }}>
+            <div>
+              <label style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", display: "block", marginBottom: 8 }}>
+                Ширина рулона, мм
+              </label>
+              <select
+                value={width}
+                onChange={(e) => setWidth(Number(e.target.value))}
+                className="input-dark"
+                style={{ padding: "10px 14px", width: "100%", borderRadius: 2, cursor: "pointer" }}
+              >
+                {[450, 500].map(w => <option key={w} value={w}>{w} мм</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", display: "block", marginBottom: 8 }}>
+                Толщина, мкм
+              </label>
+              <select
+                value={thickness}
+                onChange={(e) => setThickness(Number(e.target.value))}
+                className="input-dark"
+                style={{ padding: "10px 14px", width: "100%", borderRadius: 2, cursor: "pointer" }}
+              >
+                {[17, 20, 23, 25, 30, 35].map(t => <option key={t} value={t}>{t} мкм</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.12em", textTransform: "uppercase", display: "block", marginBottom: 8 }}>
+                {mode === "weight" ? "Вес, кг" : "Длина, м"}
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={value}
+                onChange={(e) => setValue(e.target.value === "" ? "" : Number(e.target.value))}
+                placeholder={mode === "weight" ? "Введите кг" : "Введите м"}
+                className="input-dark"
+                style={{ padding: "10px 14px", width: "100%", borderRadius: 2 }}
+              />
+            </div>
+          </div>
+
+          {result && (
+            <div
+              style={{
+                padding: "16px 20px",
+                background: "rgba(30,144,255,0.08)",
+                border: "1px solid rgba(30,144,255,0.3)",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                animation: "fade-in 0.2s ease-out",
+              }}
+            >
+              <Icon name="Zap" size={18} style={{ color: "#1e90ff", flexShrink: 0 }} />
+              <span style={{ fontFamily: "Oswald, sans-serif", fontSize: "1.1rem", color: "#fff" }}>
+                {mode === "weight" ? `${value} кг` : `${value} м`} плёнки {width}мм × {thickness}мкм →{" "}
+                <span style={{ color: "#64b5f6" }}>{result}</span>
+              </span>
+            </div>
+          )}
+
+          <p style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", marginTop: 14 }}>
+            * Расчёт приблизительный, основан на плотности LLDPE 0,920 г/см³
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Виджет обратной связи
+function CallbackWidget() {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [done, setDone] = useState(false);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setDone(true);
+    setTimeout(() => { setOpen(false); setDone(false); setName(""); setPhone(""); }, 3000);
+  };
+
+  return (
+    <div style={{ position: "fixed", right: 24, bottom: 24, zIndex: 90, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 12 }}>
+      {open && (
+        <div
+          className="animate-scale-in"
+          style={{
+            background: "rgba(10,22,38,0.98)",
+            border: "1px solid rgba(30,144,255,0.3)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(30,144,255,0.08)",
+            width: 300,
+            borderRadius: 4,
+            overflow: "hidden",
+          }}
+        >
+          <div style={{ padding: "16px 20px", background: "linear-gradient(135deg, rgba(30,144,255,0.15), rgba(21,101,192,0.1))", borderBottom: "1px solid rgba(30,144,255,0.15)" }}>
+            <div style={{ fontFamily: "Oswald, sans-serif", fontWeight: 600, fontSize: "1rem", color: "#fff", letterSpacing: "0.04em" }}>
+              НАШ МЕНЕДЖЕР СВЯЖЕТСЯ С ВАМИ
+            </div>
+            <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.78rem", color: "var(--text-muted)", marginTop: 4 }}>
+              Ответим в течение 30 минут
+            </div>
+          </div>
+          <div style={{ padding: "20px" }}>
+            {done ? (
+              <div style={{ textAlign: "center", padding: "12px 0" }}>
+                <Icon name="CheckCircle" size={32} style={{ color: "#1e90ff", margin: "0 auto 10px" }} />
+                <div style={{ fontFamily: "Oswald, sans-serif", color: "#fff", fontSize: "1rem" }}>Заявка принята!</div>
+                <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.8rem", color: "var(--text-muted)", marginTop: 4 }}>Позвоним вам скоро</div>
+              </div>
+            ) : (
+              <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <input
+                  className="input-dark"
+                  placeholder="Ваше имя *"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  style={{ padding: "10px 14px", width: "100%", borderRadius: 2, fontSize: "0.875rem" }}
+                />
+                <input
+                  className="input-dark"
+                  placeholder="Телефон *"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                  type="tel"
+                  style={{ padding: "10px 14px", width: "100%", borderRadius: 2, fontSize: "0.875rem" }}
+                />
+                <button type="submit" className="btn-primary py-2.5 text-sm" style={{ borderRadius: 2 }}>
+                  Перезвоните мне
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: open ? "rgba(30,100,200,0.9)" : "linear-gradient(135deg, #1e90ff, #1565c0)",
+          border: "2px solid rgba(100,181,246,0.3)",
+          boxShadow: open ? "0 4px 20px rgba(30,144,255,0.3)" : "0 8px 32px rgba(30,144,255,0.45)",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          transition: "all 0.3s ease",
+          transform: open ? "rotate(45deg)" : "none",
+        }}
+        title="Обратная связь"
+      >
+        <Icon name={open ? "X" : "MessageCircle"} size={22} style={{ color: "#fff" }} />
+      </button>
+      {!open && (
+        <div style={{
+          position: "absolute",
+          bottom: 64,
+          right: 0,
+          background: "rgba(10,22,38,0.95)",
+          border: "1px solid rgba(30,144,255,0.25)",
+          borderRadius: 4,
+          padding: "6px 12px",
+          fontFamily: "IBM Plex Sans, sans-serif",
+          fontSize: "0.75rem",
+          color: "var(--text-muted)",
+          whiteSpace: "nowrap",
+          pointerEvents: "none",
+          animation: "fade-in 1s ease-out 1.5s both",
+        }}>
+          Нужна консультация?
+        </div>
+      )}
+    </div>
+  );
+}
+
 const HERO_IMAGE = "https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/files/0c6dc6d4-36aa-4a19-8832-e2adee5b7944.jpg";
 
 const PRODUCTS = [
@@ -638,6 +984,8 @@ const Index = () => {
             ))}
           </div>
 
+          <FilmCalculator />
+
           <AnimatedSection>
             <div
               style={{
@@ -719,55 +1067,70 @@ const Index = () => {
                 {[
                   { icon: "Phone", label: "Телефон", value: "+7 (800) 000-00-00", sub: "Бесплатно по Калининградской области" },
                   { icon: "Mail", label: "Email", value: "info@kfu39.ru", sub: "Ответим в течение 2 часов" },
-                  { icon: "Factory", label: "Производство", value: "пос. Борское, д. 1", sub: "Самовывоз с производства" },
-                  { icon: "Building2", label: "Офис", value: "г. Калининград, аллея Смелых, 20В", sub: "Консультация и оформление заказов" },
+                  { icon: "Factory", label: "Производство", value: "пос. Борское, д. 1", sub: "Самовывоз с производства", mapSrc: "https://maps.google.com/maps?q=54.6559,20.5181&z=14&output=embed" },
+                  { icon: "Building2", label: "Офис", value: "г. Калининград, аллея Смелых, 20В", sub: "Консультация и оформление заказов", mapSrc: "https://maps.google.com/maps?q=54.7243,20.5114&z=15&output=embed" },
                   { icon: "Clock", label: "Режим работы", value: "Пн–Пт: 09:00–18:00", sub: "Сб–Вс: по договорённости" },
-                ].map((c) => (
-                  <div key={c.label} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-                    <div
-                      style={{
-                        width: 44,
-                        height: 44,
-                        background: "rgba(30,144,255,0.08)",
-                        border: "1px solid rgba(30,144,255,0.2)",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <Icon name={c.icon} size={18} style={{ color: "#1e90ff" }} />
-                    </div>
-                    <div>
+                ].map((c) => {
+                  const inner = (
+                    <div key={c.label} style={{ display: "flex", gap: 16, alignItems: "flex-start", cursor: (c as { mapSrc?: string }).mapSrc ? "help" : "default" }}>
                       <div
                         style={{
-                          fontFamily: "IBM Plex Sans, sans-serif",
-                          fontSize: "0.72rem",
-                          color: "var(--text-muted)",
-                          letterSpacing: "0.15em",
-                          textTransform: "uppercase",
-                          marginBottom: 4,
+                          width: 44,
+                          height: 44,
+                          background: "rgba(30,144,255,0.08)",
+                          border: (c as { mapSrc?: string }).mapSrc ? "1px solid rgba(30,144,255,0.4)" : "1px solid rgba(30,144,255,0.2)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                          transition: "border-color 0.2s",
                         }}
                       >
-                        {c.label}
+                        <Icon name={c.icon} size={18} style={{ color: "#1e90ff" }} />
                       </div>
-                      <div
-                        style={{
-                          fontFamily: "Oswald, sans-serif",
-                          fontSize: "1.05rem",
-                          fontWeight: 500,
-                          color: "#fff",
-                          letterSpacing: "0.02em",
-                        }}
-                      >
-                        {c.value}
-                      </div>
-                      <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                        {c.sub}
+                      <div>
+                        <div
+                          style={{
+                            fontFamily: "IBM Plex Sans, sans-serif",
+                            fontSize: "0.72rem",
+                            color: "var(--text-muted)",
+                            letterSpacing: "0.15em",
+                            textTransform: "uppercase",
+                            marginBottom: 4,
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 6,
+                          }}
+                        >
+                          {c.label}
+                          {(c as { mapSrc?: string }).mapSrc && (
+                            <span style={{ fontSize: "0.65rem", color: "#1e90ff", letterSpacing: "0.05em" }}>карта ↗</span>
+                          )}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "Oswald, sans-serif",
+                            fontSize: "1.05rem",
+                            fontWeight: 500,
+                            color: "#fff",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          {c.value}
+                        </div>
+                        <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                          {c.sub}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                  const mapSrc = (c as { mapSrc?: string }).mapSrc;
+                  return mapSrc ? (
+                    <MapTooltip key={c.label} address={c.value} mapSrc={mapSrc}>
+                      {inner}
+                    </MapTooltip>
+                  ) : inner;
+                })}
               </div>
             </AnimatedSection>
 
@@ -881,6 +1244,8 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      <CallbackWidget />
 
       {/* MODAL */}
       {modalOpen && (
