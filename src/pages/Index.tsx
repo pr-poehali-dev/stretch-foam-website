@@ -820,8 +820,7 @@ const Index = () => {
                     lineHeight: 1.7,
                   }}
                 >
-                  «Работаем напрямую с производителем — без наценок посредников
-                  и с гарантией стабильного качества каждой партии.»
+                  «Работай напрямую с производителем — без наценок посредников и с гарантией стабильного качества каждой партии.»
                 </p>
               </div>
             </AnimatedSection>
@@ -1049,6 +1048,73 @@ const Index = () => {
         </div>
       </section>
 
+      {/* CLIENTS */}
+      <section style={{ background: "var(--bg-dark-2)", padding: "80px 0", borderTop: "1px solid rgba(74,144,217,0.08)" }}>
+        <div className="max-w-7xl mx-auto px-6">
+          <AnimatedSection>
+            <div className="flex items-center gap-4 mb-3">
+              <div className="section-divider" />
+              <span style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.75rem", letterSpacing: "0.2em", color: "var(--accent-blue)", textTransform: "uppercase" }}>
+                Наши клиенты
+              </span>
+            </div>
+            <h2 style={{ fontFamily: "Oswald, sans-serif", fontWeight: 600, fontSize: "clamp(1.8rem, 3vw, 2.6rem)", color: "#fff", marginBottom: 12, lineHeight: 1.1 }}>
+              НАМ ДОВЕРЯЮТ
+            </h2>
+            <p style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: 52 }}>
+              Крупные розничные сети и производственные предприятия Калининградской области.
+            </p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            {[
+              { name: "Бауцентр", icon: "🏗️", desc: "Строительный ритейл" },
+              { name: "Совлит", icon: "🏭", desc: "Производство" },
+              { name: "За родину!", icon: "🌾", desc: "Агрохолдинг" },
+              { name: "Vici", icon: "🐟", desc: "Рыбная продукция" },
+              { name: "Айсберг", icon: "❄️", desc: "Логистика и склад" },
+            ].map((client) => (
+              <AnimatedSection key={client.name}>
+                <div
+                  style={{
+                    background: "rgba(13,28,46,0.7)",
+                    border: "1px solid rgba(74,144,217,0.15)",
+                    padding: "28px 20px",
+                    textAlign: "center",
+                    transition: "all 0.3s",
+                    cursor: "default",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 12,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(30,144,255,0.4)";
+                    e.currentTarget.style.background = "rgba(30,144,255,0.05)";
+                    e.currentTarget.style.transform = "translateY(-3px)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(74,144,217,0.15)";
+                    e.currentTarget.style.background = "rgba(13,28,46,0.7)";
+                    e.currentTarget.style.transform = "none";
+                  }}
+                >
+                  <div style={{ fontSize: "2.2rem", lineHeight: 1 }}>{client.icon}</div>
+                  <div style={{ fontFamily: "Oswald, sans-serif", fontWeight: 600, fontSize: "1rem", color: "#fff", letterSpacing: "0.04em" }}>
+                    {client.name}
+                  </div>
+                  <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    {client.desc}
+                  </div>
+                </div>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CONTACTS */}
       <section id="contacts" style={{ background: "var(--bg-dark-3)", padding: "100px 0" }}>
         <div className="max-w-7xl mx-auto px-6">
@@ -1085,9 +1151,9 @@ const Index = () => {
             <AnimatedSection>
               <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
                 {[
-                  { icon: "Phone", label: "Телефон", value: "+7 (800) 000-00-00", sub: "Бесплатно по Калининградской области" },
+                  { icon: "Phone", label: "Телефон", value: "+7 (4012) 52-66-00", sub: "Бесплатно по Калининградской области" },
                   { icon: "Mail", label: "Email", value: "info@kdfu.ru", sub: "Ответим в течение 2 часов" },
-                  { icon: "Factory", label: "Производство", value: "пос. Борское, д. 1", sub: "Самовывоз с производства", mapSrc: "https://yandex.ru/map-widget/v1/?ll=20.5181%2C54.6559&z=14&pt=20.5181%2C54.6559%2Cpm2rdm" },
+                  { icon: "Factory", label: "Производство", value: "Гвардейский район, пос. Борское, 1А", sub: "Самовывоз с производства", mapSrc: "https://yandex.ru/map-widget/v1/?ll=21.0833%2C54.6167&z=13&pt=21.0833%2C54.6167%2Cpm2rdm&text=%D0%93%D0%B2%D0%B0%D1%80%D0%B4%D0%B5%D0%B9%D1%81%D0%BA%D0%B8%D0%B9+%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%2C+%D0%91%D0%BE%D1%80%D1%81%D0%BA%D0%BE%D0%B5" },
                   { icon: "Building2", label: "Офис", value: "г. Калининград, аллея Смелых, 20В", sub: "Консультация и оформление заказов", mapSrc: "https://yandex.ru/map-widget/v1/?ll=20.5114%2C54.7243&z=15&pt=20.5114%2C54.7243%2Cpm2rdm&text=%D0%9A%D0%B0%D0%BB%D0%B8%D0%BD%D0%B8%D0%BD%D0%B3%D1%80%D0%B0%D0%B4%2C+%D0%B0%D0%BB%D0%BB%D0%B5%D1%8F+%D0%A1%D0%BC%D0%B5%D0%BB%D1%8B%D1%85%2C+20%D0%92" },
                   { icon: "Clock", label: "Режим работы", value: "Пн–Пт: 09:00–18:00", sub: "Сб–Вс: по договорённости" },
                 ].map((c) => {
