@@ -241,8 +241,13 @@ function CallbackWidget() {
   const [phone, setPhone] = useState("");
   const [done, setDone] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    await fetch("https://functions.poehali.dev/c16dfd96-103d-40df-92cf-0b9bc1bac38c", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "callback", name, phone }),
+    }).catch(() => null);
     setDone(true);
     setTimeout(() => { setOpen(false); setDone(false); setName(""); setPhone(""); }, 3000);
   };
@@ -464,8 +469,19 @@ const Index = () => {
     setFormData({ name: "", company: "", phone: "", email: "", comment: "" });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const SEND_URL = "https://functions.poehali.dev/c16dfd96-103d-40df-92cf-0b9bc1bac38c";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const payload: Record<string, string> = {
+      type: modalOpen ? formType : "contact",
+      name: formData.name,
+      phone: formData.phone,
+    };
+    if (formData.email) payload.email = formData.email;
+    if (formData.company) payload.company = formData.company;
+    if (formData.comment) payload.comment = formData.comment;
+    await fetch(SEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(() => null);
     setSubmitted(true);
   };
 
