@@ -584,18 +584,11 @@ const Index = () => {
       >
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                background: "linear-gradient(135deg, #1e90ff, #1565c0)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Icon name="Layers" size={18} style={{ color: "#fff" }} />
-            </div>
+            <img
+              src="https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/bucket/d90dffdb-6dd0-4121-b7d6-bf8444e752a7.png"
+              alt="КФУ"
+              style={{ width: 40, height: 40, objectFit: "contain", mixBlendMode: "screen" }}
+            />
             <div>
               <div
                 style={{
@@ -1343,8 +1336,13 @@ const Index = () => {
         }}
       >
         <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4">
-          <div style={{ fontFamily: "Oswald, sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "0.1em", color: "var(--text-muted)" }}>
-            КФУ
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <img
+              src="https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/bucket/d90dffdb-6dd0-4121-b7d6-bf8444e752a7.png"
+              alt="КФУ"
+              style={{ width: 32, height: 32, objectFit: "contain", mixBlendMode: "screen", opacity: 0.7 }}
+            />
+            <span style={{ fontFamily: "Oswald, sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "0.1em", color: "var(--text-muted)" }}>КФУ</span>
           </div>
           <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.78rem", color: "var(--text-muted)" }}>
             © 2025 Калининградская Фабрика Упаковки · Производство стрейч плёнки
