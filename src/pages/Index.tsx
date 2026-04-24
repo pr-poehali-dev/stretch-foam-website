@@ -1143,8 +1143,18 @@ const Index = () => {
       </section>
 
       {/* CONTACTS */}
-      <section id="contacts" style={{ background: "var(--bg-dark-3)", padding: "100px 0" }}>
-        <div className="max-w-7xl mx-auto px-6">
+      <section id="contacts" style={{ background: "var(--bg-dark-3)", padding: "100px 0", position: "relative", overflow: "hidden" }}>
+        {/* Карта Калининграда на фоне */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
+          <iframe
+            src="https://www.openstreetmap.org/export/embed.html?bbox=20.3,54.6,20.7,54.8&layer=mapnik"
+            style={{ width: "100%", height: "100%", border: "none", opacity: 0.13, filter: "grayscale(100%) brightness(0.5) sepia(30%) hue-rotate(190deg)" }}
+            title="Калининград"
+          />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, var(--bg-dark-3) 0%, transparent 20%, transparent 80%, var(--bg-dark-3) 100%)" }} />
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to right, var(--bg-dark-3) 0%, transparent 30%, transparent 70%, var(--bg-dark-3) 100%)" }} />
+        </div>
+        <div className="max-w-7xl mx-auto px-6" style={{ position: "relative", zIndex: 1 }}>
           <AnimatedSection>
             <div className="flex items-center gap-4 mb-3">
               <div className="section-divider" />
