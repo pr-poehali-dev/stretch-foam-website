@@ -20,9 +20,12 @@ def handler(event: dict, context) -> dict:
     def resp(status, data):
         return {"statusCode": status, "headers": cors_headers, "body": data}
 
+    raw_body = event.get("body") or "{}"
+    print(f"[send-email] raw body type={type(raw_body).__name__} value={repr(raw_body)[:200]}")
     try:
-        body = json.loads(event.get("body") or "{}")
-    except Exception:
+        body = json.loads(raw_body) if isinstance(raw_body, str) else raw_body
+    except Exception as ex:
+        print(f"[send-email] JSON parse error: {ex}")
         return resp(400, {"error": "Invalid JSON"})
 
     form_type = body.get("type", "contact")
@@ -61,11 +64,18 @@ def handler(event: dict, context) -> dict:
 
     html_body = "\n".join(lines)
 
-    smtp_host = os.environ.get("SMTP_HOST", "smtp.yandex.ru")
+    smtp_host = os.environ.get("SMTP_HOST", "")
     smtp_port = int(os.environ.get("SMTP_PORT", "465"))
     smtp_user = os.environ.get("SMTP_USER", "")
     smtp_pass = os.environ.get("SMTP_PASS", "")
     to_email = "info@kdfu.ru"
+
+    print(f"[send-email] type={form_type} name={name} phone={phone}")
+    print(f"[send-email] SMTP host={smtp_host!r} user={smtp_user!r} pass_set={bool(smtp_pass)}")
+
+    if not smtp_host or not smtp_user or not smtp_pass:
+        print("[send-email] ERROR: SMTP secrets not configured")
+        return resp(500, {"error": "SMTP не настроен — заполните секреты SMTP_HOST, SMTP_USER, SMTP_PASS"})
 
     msg = MIMEMultipart("alternative")
     msg["Subject"] = f"[Сайт КФУ] {subject} — {name}"
@@ -75,10 +85,13 @@ def handler(event: dict, context) -> dict:
     msg.attach(MIMEText(html_body, "html", "utf-8"))
 
     try:
+        print(f"[send-email] connecting to {smtp_host}:{smtp_port}")
         with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_user, [to_email], msg.as_string())
+        print("[send-email] sent OK")
     except Exception as e:
+        print(f"[send-email] SMTP ERROR: {e}")
         return resp(500, {"error": f"Ошибка отправки: {str(e)}"})
 
     return resp(200, {"ok": True})
