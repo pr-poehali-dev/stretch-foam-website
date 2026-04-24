@@ -351,29 +351,32 @@ const HERO_IMAGE = "https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-595
 
 const PRODUCTS = [
   {
-    icon: "Package",
+    icon: "HandHelping",
+    emoji: "🤲",
     name: "Стрейч плёнка ручная",
-    desc: "Ширина 450–500 мм, толщина 17–23 мкм. Оптимальна для ручной упаковки паллет на малых объёмах.",
-    params: ["Ширина: 450–500 мм", "Толщина: 17–23 мкм", "Длина: 150–300 м"],
+    desc: "Для ручной упаковки паллет на малых и средних объёмах. Эластичная, с высокой степенью растяжения.",
+    params: ["Ширина: 100–500 мм", "Толщина: 17–23 мкм", "Длина: до 1000 м"],
   },
   {
-    icon: "Layers",
+    icon: "Settings2",
+    emoji: "⚙️",
     name: "Стрейч плёнка машинная",
-    desc: "Ширина 500 мм, толщина 17–35 мкм. Для автоматических и полуавтоматических паллетоупаковщиков.",
-    params: ["Ширина: 500 мм", "Толщина: 17–35 мкм", "Длина: 1500–3000 м"],
+    desc: "Для автоматических и полуавтоматических паллетоупаковщиков. Высокая скорость намотки, стабильная толщина.",
+    params: ["Ширина: 500 мм", "Толщина: от 12 мкм", "Длина: до 5000 м"],
   },
   {
-    icon: "Ribbon",
+    icon: "Tape",
+    emoji: "📦",
     name: "Клейкие ленты",
     desc: "Скотч и клейкие ленты для упаковки коробов, маркировки и укрепления швов. Широкий ассортимент.",
-    params: ["Прозрачные и цветные", "Ширина: 48–72 мм", "Длина: 50–66 м"],
+    params: ["Прозрачные и цветные", "Ширина: 48–75 мм", "Длина: 50–150 м"],
   },
 ];
 
 const STATS = [
   { value: "10+", label: "лет на рынке" },
   { value: "500+", label: "клиентов" },
-  { value: "3", label: "вида продукции" },
+  { value: "200т", label: "производительность в месяц" },
   { value: "48ч", label: "срок отгрузки" },
 ];
 
@@ -386,7 +389,7 @@ const ADVANTAGES = [
   {
     icon: "BadgeCheck",
     title: "Сертифицированное качество",
-    text: "Продукция соответствует ГОСТ и международным стандартам. Все партии проходят лабораторный контроль.",
+    text: "Продукция соответствует ГОСТ и международным стандартам. Контроль качества на каждом этапе производства.",
   },
   {
     icon: "Handshake",
@@ -923,32 +926,49 @@ const Index = () => {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
             {PRODUCTS.map((p) => (
               <AnimatedSection key={p.name}>
-                <div className="product-card" style={{ padding: "28px", height: "100%" }}>
-                  <div
-                    style={{
-                      width: 48,
-                      height: 48,
-                      background: "rgba(30,144,255,0.08)",
-                      border: "1px solid rgba(30,144,255,0.2)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      marginBottom: 20,
-                    }}
-                  >
-                    <Icon name={p.icon} size={22} style={{ color: "#1e90ff" }} />
+                <div className="product-card" style={{ padding: "28px", height: "100%", position: "relative", overflow: "hidden" }}>
+                  {/* Декоративная большая emoji-иконка */}
+                  <div style={{
+                    position: "absolute",
+                    top: 12,
+                    right: 16,
+                    fontSize: "4.5rem",
+                    opacity: 0.07,
+                    lineHeight: 1,
+                    userSelect: "none",
+                    pointerEvents: "none",
+                  }}>
+                    {p.emoji}
                   </div>
-                  <div
-                    style={{
-                      fontFamily: "Oswald, sans-serif",
-                      fontWeight: 500,
-                      fontSize: "1.1rem",
-                      color: "#fff",
-                      marginBottom: 12,
-                      letterSpacing: "0.02em",
-                    }}
-                  >
-                    {p.name}
+                  <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
+                    <div
+                      style={{
+                        width: 52,
+                        height: 52,
+                        background: "rgba(30,144,255,0.08)",
+                        border: "1px solid rgba(30,144,255,0.2)",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                        fontSize: "1.6rem",
+                        position: "relative",
+                      }}
+                    >
+                      <span style={{ filter: "drop-shadow(0 0 8px rgba(30,144,255,0.4))" }}>{p.emoji}</span>
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "Oswald, sans-serif",
+                        fontWeight: 500,
+                        fontSize: "1.1rem",
+                        color: "#fff",
+                        letterSpacing: "0.02em",
+                        lineHeight: 1.2,
+                      }}
+                    >
+                      {p.name}
+                    </div>
                   </div>
                   <p
                     style={{
@@ -1013,7 +1033,7 @@ const Index = () => {
                   Нужен нестандартный размер или объём?
                 </div>
                 <p style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.9rem", color: "var(--text-muted)" }}>
-                  Производим под заказ. Минимальная партия — от 1 паллеты.
+                  Производим под заказ с любыми параметрами.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3">
@@ -1066,9 +1086,9 @@ const Index = () => {
               <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
                 {[
                   { icon: "Phone", label: "Телефон", value: "+7 (800) 000-00-00", sub: "Бесплатно по Калининградской области" },
-                  { icon: "Mail", label: "Email", value: "info@kfu39.ru", sub: "Ответим в течение 2 часов" },
-                  { icon: "Factory", label: "Производство", value: "пос. Борское, д. 1", sub: "Самовывоз с производства", mapSrc: "https://maps.google.com/maps?q=54.6559,20.5181&z=14&output=embed" },
-                  { icon: "Building2", label: "Офис", value: "г. Калининград, аллея Смелых, 20В", sub: "Консультация и оформление заказов", mapSrc: "https://maps.google.com/maps?q=54.7243,20.5114&z=15&output=embed" },
+                  { icon: "Mail", label: "Email", value: "info@kdfu.ru", sub: "Ответим в течение 2 часов" },
+                  { icon: "Factory", label: "Производство", value: "пос. Борское, д. 1", sub: "Самовывоз с производства", mapSrc: "https://yandex.ru/map-widget/v1/?ll=20.5181%2C54.6559&z=14&pt=20.5181%2C54.6559%2Cpm2rdm" },
+                  { icon: "Building2", label: "Офис", value: "г. Калининград, аллея Смелых, 20В", sub: "Консультация и оформление заказов", mapSrc: "https://yandex.ru/map-widget/v1/?ll=20.5114%2C54.7243&z=15&pt=20.5114%2C54.7243%2Cpm2rdm&text=%D0%9A%D0%B0%D0%BB%D0%B8%D0%BD%D0%B8%D0%BD%D0%B3%D1%80%D0%B0%D0%B4%2C+%D0%B0%D0%BB%D0%BB%D0%B5%D1%8F+%D0%A1%D0%BC%D0%B5%D0%BB%D1%8B%D1%85%2C+20%D0%92" },
                   { icon: "Clock", label: "Режим работы", value: "Пн–Пт: 09:00–18:00", sub: "Сб–Вс: по договорённости" },
                 ].map((c) => {
                   const inner = (
