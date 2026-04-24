@@ -585,9 +585,9 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
-              src="https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/bucket/d90dffdb-6dd0-4121-b7d6-bf8444e752a7.png"
+              src="https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/bucket/5fd35f9a-31e6-4ee2-8a51-f3c449c10f4b.png"
               alt="КФУ"
-              style={{ width: 40, height: 40, objectFit: "contain", mixBlendMode: "screen" }}
+              style={{ width: 42, height: 42, objectFit: "contain", mixBlendMode: "lighten" }}
             />
             <div>
               <div
@@ -1338,9 +1338,9 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4">
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <img
-              src="https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/bucket/d90dffdb-6dd0-4121-b7d6-bf8444e752a7.png"
+              src="https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/bucket/5fd35f9a-31e6-4ee2-8a51-f3c449c10f4b.png"
               alt="КФУ"
-              style={{ width: 32, height: 32, objectFit: "contain", mixBlendMode: "screen", opacity: 0.7 }}
+              style={{ width: 32, height: 32, objectFit: "contain", mixBlendMode: "lighten", opacity: 0.75 }}
             />
             <span style={{ fontFamily: "Oswald, sans-serif", fontWeight: 700, fontSize: "1rem", letterSpacing: "0.1em", color: "var(--text-muted)" }}>КФУ</span>
           </div>
