@@ -240,16 +240,18 @@ function CallbackWidget() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [done, setDone] = useState(false);
+  const [widgetConsent, setWidgetConsent] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!widgetConsent) return;
     await fetch("https://functions.poehali.dev/c16dfd96-103d-40df-92cf-0b9bc1bac38c", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ type: "callback", name, phone }),
     }).catch(() => null);
     setDone(true);
-    setTimeout(() => { setOpen(false); setDone(false); setName(""); setPhone(""); }, 3000);
+    setTimeout(() => { setOpen(false); setDone(false); setName(""); setPhone(""); setWidgetConsent(false); }, 3000);
   };
 
   return (
@@ -300,7 +302,13 @@ function CallbackWidget() {
                   type="tel"
                   style={{ padding: "10px 14px", width: "100%", borderRadius: 2, fontSize: "0.875rem" }}
                 />
-                <button type="submit" className="btn-primary py-2.5 text-sm" style={{ borderRadius: 2 }}>
+                <ConsentCheckbox checked={widgetConsent} onChange={setWidgetConsent} />
+                <button
+                  type="submit"
+                  className="btn-primary py-2.5 text-sm"
+                  style={{ borderRadius: 2, opacity: widgetConsent ? 1 : 0.45, cursor: widgetConsent ? "pointer" : "not-allowed" }}
+                  disabled={!widgetConsent}
+                >
                   Перезвоните мне
                 </button>
               </form>
@@ -354,24 +362,55 @@ function CallbackWidget() {
 
 const HERO_IMAGE = "https://cdn.poehali.dev/projects/8fbdf227-6035-4a92-b027-59557fc75d15/files/0c6dc6d4-36aa-4a19-8832-e2adee5b7944.jpg";
 
+// SVG иконки продуктов — можно редактировать вручную
+const ProductIconManual = () => (
+  // Ручная стрейч плёнка — рулон в руках
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <rect x="18" y="8" width="14" height="28" rx="7" stroke="#1e90ff" strokeWidth="2.2"/>
+    <rect x="22" y="12" width="6" height="20" rx="3" fill="rgba(30,144,255,0.15)" stroke="#1e90ff" strokeWidth="1.4"/>
+    <path d="M10 34 Q14 30 18 32" stroke="#1e90ff" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M38 34 Q34 30 32 32" stroke="#1e90ff" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M8 36 Q13 40 24 40 Q35 40 40 36" stroke="#1e90ff" strokeWidth="1.8" strokeLinecap="round" fill="none"/>
+  </svg>
+);
+
+const ProductIconMachine = () => (
+  // Машинная плёнка — большой рулон с шестернёй
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <rect x="12" y="6" width="18" height="34" rx="9" stroke="#1e90ff" strokeWidth="2.2"/>
+    <rect x="17" y="11" width="8" height="24" rx="4" fill="rgba(30,144,255,0.15)" stroke="#1e90ff" strokeWidth="1.4"/>
+    <circle cx="36" cy="14" r="6" stroke="#1e90ff" strokeWidth="2"/>
+    <circle cx="36" cy="14" r="2" fill="#1e90ff"/>
+    <path d="M36 8 V6 M36 22 V20 M30 14 H28 M44 14 H42" stroke="#1e90ff" strokeWidth="1.8" strokeLinecap="round"/>
+    <path d="M31.8 9.8 L30.4 8.4 M41.6 19.6 L40.2 18.2 M40.2 9.8 L41.6 8.4 M30.4 19.6 L31.8 18.2" stroke="#1e90ff" strokeWidth="1.4" strokeLinecap="round"/>
+  </svg>
+);
+
+const ProductIconTape = () => (
+  // Клейкая лента — диспенсер с лентой
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <circle cx="20" cy="20" r="12" stroke="#1e90ff" strokeWidth="2.2"/>
+    <circle cx="20" cy="20" r="5" fill="rgba(30,144,255,0.15)" stroke="#1e90ff" strokeWidth="1.6"/>
+    <path d="M29 27 L38 38" stroke="#1e90ff" strokeWidth="2.4" strokeLinecap="round"/>
+    <path d="M36 36 L42 30 L38 38 L32 36 Z" fill="#1e90ff"/>
+    <path d="M8 10 Q12 6 20 8" stroke="#1e90ff" strokeWidth="1.6" strokeLinecap="round" strokeDasharray="2 2"/>
+  </svg>
+);
+
+const PRODUCT_ICONS = [ProductIconManual, ProductIconMachine, ProductIconTape];
+
 const PRODUCTS = [
   {
-    icon: "HandHelping",
-    emoji: "🤲",
     name: "Стрейч плёнка ручная",
     desc: "Для ручной упаковки паллет на малых и средних объёмах. Эластичная, с высокой степенью растяжения.",
     params: ["Ширина: 100–500 мм", "Толщина: 17–23 мкм", "Длина: до 1000 м"],
   },
   {
-    icon: "Settings2",
-    emoji: "⚙️",
     name: "Стрейч плёнка машинная",
     desc: "Для автоматических и полуавтоматических паллетоупаковщиков. Высокая скорость намотки, стабильная толщина.",
     params: ["Ширина: 500 мм", "Толщина: от 12 мкм", "Длина: до 5000 м"],
   },
   {
-    icon: "Tape",
-    emoji: "📦",
     name: "Клейкие ленты",
     desc: "Скотч и клейкие ленты для упаковки коробов, маркировки и укрепления швов. Широкий ассортимент.",
     params: ["Прозрачные и цветные", "Ширина: 48–75 мм", "Длина: 50–150 м"],
@@ -434,11 +473,46 @@ function AnimatedSection({ children, className = "" }: { children: React.ReactNo
   );
 }
 
+function ConsentCheckbox({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer" }}>
+      <div
+        onClick={() => onChange(!checked)}
+        style={{
+          width: 18,
+          height: 18,
+          border: `2px solid ${checked ? "#1e90ff" : "rgba(74,144,217,0.4)"}`,
+          background: checked ? "#1e90ff" : "transparent",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+          marginTop: 1,
+          transition: "all 0.2s",
+          cursor: "pointer",
+        }}
+      >
+        {checked && (
+          <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+            <path d="M1 4L4 7.5L10 1" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+      </div>
+      <span style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.75rem", color: "var(--text-muted)", lineHeight: 1.5 }}>
+        Я согласен(а) на обработку{" "}
+        <span style={{ color: "#64b5f6", cursor: "default" }}>персональных данных</span>{" "}
+        в соответствии с Федеральным законом №152-ФЗ
+      </span>
+    </label>
+  );
+}
+
 const Index = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [formType, setFormType] = useState<"sample" | "offer">("offer");
   const [formData, setFormData] = useState({ name: "", company: "", phone: "", email: "", comment: "" });
+  const [consent, setConsent] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
@@ -466,6 +540,7 @@ const Index = () => {
     setFormType(type);
     setModalOpen(true);
     setSubmitted(false);
+    setConsent(false);
     setFormData({ name: "", company: "", phone: "", email: "", comment: "" });
   };
 
@@ -939,21 +1014,23 @@ const Index = () => {
           </AnimatedSection>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {PRODUCTS.map((p) => (
+            {PRODUCTS.map((p, idx) => {
+              const ProductSvgIcon = PRODUCT_ICONS[idx];
+              return (
               <AnimatedSection key={p.name}>
                 <div className="product-card" style={{ padding: "28px", height: "100%", position: "relative", overflow: "hidden" }}>
-                  {/* Декоративная большая emoji-иконка */}
+                  {/* Декоративная SVG-иконка в фоне */}
                   <div style={{
                     position: "absolute",
-                    top: 12,
-                    right: 16,
-                    fontSize: "4.5rem",
-                    opacity: 0.07,
-                    lineHeight: 1,
-                    userSelect: "none",
+                    top: 10,
+                    right: 14,
+                    opacity: 0.06,
                     pointerEvents: "none",
+                    userSelect: "none",
+                    transform: "scale(3.5)",
+                    transformOrigin: "top right",
                   }}>
-                    {p.emoji}
+                    <ProductSvgIcon />
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 20 }}>
                     <div
@@ -966,11 +1043,11 @@ const Index = () => {
                         alignItems: "center",
                         justifyContent: "center",
                         flexShrink: 0,
-                        fontSize: "1.6rem",
                         position: "relative",
+                        filter: "drop-shadow(0 0 6px rgba(30,144,255,0.25))",
                       }}
                     >
-                      <span style={{ filter: "drop-shadow(0 0 8px rgba(30,144,255,0.4))" }}>{p.emoji}</span>
+                      <ProductSvgIcon />
                     </div>
                     <div
                       style={{
@@ -1016,7 +1093,8 @@ const Index = () => {
                   </div>
                 </div>
               </AnimatedSection>
-            ))}
+              );
+            })}
           </div>
 
           <FilmCalculator />
@@ -1061,73 +1139,6 @@ const Index = () => {
               </div>
             </div>
           </AnimatedSection>
-        </div>
-      </section>
-
-      {/* CLIENTS */}
-      <section style={{ background: "var(--bg-dark-2)", padding: "80px 0", borderTop: "1px solid rgba(74,144,217,0.08)" }}>
-        <div className="max-w-7xl mx-auto px-6">
-          <AnimatedSection>
-            <div className="flex items-center gap-4 mb-3">
-              <div className="section-divider" />
-              <span style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.75rem", letterSpacing: "0.2em", color: "var(--accent-blue)", textTransform: "uppercase" }}>
-                Наши клиенты
-              </span>
-            </div>
-            <h2 style={{ fontFamily: "Oswald, sans-serif", fontWeight: 600, fontSize: "clamp(1.8rem, 3vw, 2.6rem)", color: "#fff", marginBottom: 12, lineHeight: 1.1 }}>
-              НАМ ДОВЕРЯЮТ
-            </h2>
-            <p style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: 52 }}>
-              Крупные розничные сети и производственные предприятия Калининградской области.
-            </p>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              { name: "Бауцентр", icon: "🏗️", desc: "Строительный ритейл" },
-              { name: "Совлит", icon: "🏭", desc: "Производство" },
-              { name: "За родину!", icon: "🌾", desc: "Агрохолдинг" },
-              { name: "Vici", icon: "🐟", desc: "Рыбная продукция" },
-              { name: "Айсберг", icon: "❄️", desc: "Логистика и склад" },
-            ].map((client) => (
-              <AnimatedSection key={client.name}>
-                <div
-                  style={{
-                    background: "rgba(13,28,46,0.7)",
-                    border: "1px solid rgba(74,144,217,0.15)",
-                    padding: "28px 20px",
-                    textAlign: "center",
-                    transition: "all 0.3s",
-                    cursor: "default",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 12,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(30,144,255,0.4)";
-                    e.currentTarget.style.background = "rgba(30,144,255,0.05)";
-                    e.currentTarget.style.transform = "translateY(-3px)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(74,144,217,0.15)";
-                    e.currentTarget.style.background = "rgba(13,28,46,0.7)";
-                    e.currentTarget.style.transform = "none";
-                  }}
-                >
-                  <div style={{ fontSize: "2.2rem", lineHeight: 1 }}>{client.icon}</div>
-                  <div style={{ fontFamily: "Oswald, sans-serif", fontWeight: 600, fontSize: "1rem", color: "#fff", letterSpacing: "0.04em" }}>
-                    {client.name}
-                  </div>
-                  <div style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    {client.desc}
-                  </div>
-                </div>
-              </AnimatedSection>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -1281,6 +1292,7 @@ const Index = () => {
                     rows={4}
                     style={{ padding: "12px 16px", width: "100%", borderRadius: 2, resize: "vertical" }}
                   />
+                  <ConsentCheckbox checked={consent} onChange={setConsent} />
                   {submitted ? (
                     <div
                       style={{
@@ -1296,7 +1308,12 @@ const Index = () => {
                       Сообщение отправлено. Свяжемся с вами в ближайшее время.
                     </div>
                   ) : (
-                    <button type="submit" className="btn-primary py-3 text-sm" style={{ borderRadius: 2 }}>
+                    <button
+                      type="submit"
+                      className="btn-primary py-3 text-sm"
+                      style={{ borderRadius: 2, opacity: consent ? 1 : 0.45, cursor: consent ? "pointer" : "not-allowed" }}
+                      disabled={!consent}
+                    >
                       Отправить сообщение
                     </button>
                   )}
@@ -1469,12 +1486,15 @@ const Index = () => {
                   rows={4}
                   style={{ padding: "13px 16px", width: "100%", borderRadius: 2, resize: "vertical" }}
                 />
-                <button type="submit" className="btn-primary py-4 text-sm" style={{ borderRadius: 2, marginTop: 4 }}>
+                <ConsentCheckbox checked={consent} onChange={setConsent} />
+                <button
+                  type="submit"
+                  className="btn-primary py-4 text-sm"
+                  style={{ borderRadius: 2, marginTop: 4, opacity: consent ? 1 : 0.45, cursor: consent ? "pointer" : "not-allowed" }}
+                  disabled={!consent}
+                >
                   {formType === "offer" ? "Получить коммерческое предложение" : "Заказать образцы"}
                 </button>
-                <p style={{ fontFamily: "IBM Plex Sans, sans-serif", fontSize: "0.72rem", color: "var(--text-muted)", textAlign: "center" }}>
-                  Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных
-                </p>
               </form>
             )}
           </div>
